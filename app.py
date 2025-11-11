@@ -34,9 +34,14 @@ def show_tree(current_node: dict, level: int = 0):
         elif key == 'files' and isinstance(value, list):
             for file in value:
                 print(ident + file)
+"""
+"database": {
+    "Logs":
+    
+}
+
+"""
           
-
-
 def translate_database():
     tree_structure = {}
     root = os.path.basename(database_path)
@@ -60,14 +65,8 @@ def translate_database():
         
     return tree_structure
 
+def search_file
 
-branches = translate_database()
-
-show_tree(branches)
-    
-
-read_file(os.path.join(branches['database']['Logs']['abspath'],
-                  branches['database']['Logs']['files'][0]))
 
 # @app.route('/')
 # def root():
