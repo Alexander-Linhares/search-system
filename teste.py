@@ -1,6 +1,9 @@
 from pathlib import Path
 
 def root_dir(target: str) -> Path:
+    """
+        Encontra dinamicamente 
+    """
     TARGET_ROOT_DIR = target
     starting_path = Path(__file__).resolve()
     for parent in starting_path.parents:
@@ -13,11 +16,35 @@ def root_dir(target: str) -> Path:
 
 rd = root_dir("search-system")
 DATABASE = rd / "database"
-def match_file(node: Path, file_name: str):
+def match_files(node: Path, file_name: str):
+    r"""
+        Busca por arquivos de forma recursiva na árvore de diretórios,
+        percorrendo cada diretório e listando seus subcomponentes.
+
+        Parameters
+        ----------
+        node : pathlib.Path
+            O nó inicial da busca. É um objeto Path da biblioteca pathlib.
+        file_name : str
+            Pode ser o nome do arquivo completo ou apenas uma substring que pertença
+            ao nome do arquivo.
+
+        Returns
+        -------
+        str ou list of str
+            O caminho absoluto para o arquivo, incluindo a extensão e a resolução de
+            links simbólicos (se houver).
+            
+        Notes
+        -----
+        A função pode retornar uma *lista* de caminhos de arquivos se 'file_name' for
+        compatível com mais de um arquivo, independentemente da hierarquia do nó da árvore.
+        Se apenas um arquivo for encontrado, uma única string pode ser retornada.
+    """
     matched_files = []
     for element in node.iterdir():
         if element.is_dir():
-            sub_matches = match_file(element, file_name)
+            sub_matches = match_files(element, file_name)
             matched_files.extend(sub_matches)
         elif element.is_file():
             if file_name.lower() in element.name.lower():
@@ -25,14 +52,16 @@ def match_file(node: Path, file_name: str):
             
     return matched_files
 
-some_csv_file_path = match_file(DATABASE, 'regi')[0]
+some_csv_file_path = match_files(DATABASE, 'regi')[0]
+print(type(some_csv_file_path))
 
-def readfile(file_path: str):
+def read_csv(file_path: str):
     table = {}
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r', encoding="latin-1") as file:
         first_line = file.readline().split(',')
         for column in first_line:
-            table[column.replace('\n', '').strip('"')] = []
+            key = column.replace('\n', '').strip('"')
+            table[key] = []
         
         i = 0
         while i < 10:
@@ -45,7 +74,7 @@ def readfile(file_path: str):
     return table
 
 def dict_table_to_matrix(d: dict):
-    #header representa as chaves do dicionário em uma lista 
+    """header representa as chaves do dicionário em uma lista """
     header = list(d.keys())
     matrix = []
     for j in range(len(list(d.values())[0])):
@@ -63,6 +92,7 @@ def print_matrix(m: list[list]):
             print(f'{cell.center(10, ' ')}', end=' ')
         print()
 
-t = readfile(some_csv_file_path)
+t = read_csv(some_csv_file_path)
 m = dict_table_to_matrix(t)
 print_matrix(m)
+
