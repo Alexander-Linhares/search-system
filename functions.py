@@ -79,29 +79,25 @@ def read_csv(file_path: str):
     table: dict[list] = {}
     file = Path(file_path)
     #Verifica se o arquivo realmente existe para evitar erros durante
-    #a execução caso o arquivo seja excluído, ou o caminho não exista
+    #a execução caso o arquivo seja excluído, ou o caminho não exista mais
     if file.exists():
         with open(file_path, 'r', encoding="latin-1") as f:
-            #Coleta informações da primeira linha (cabeçalho) e as transforma em chaves para o dicionário table
-            # first_line = f.readline().split(',')
-            # for column in first_line:
-            #     key = column.replace('\n', '').strip('"')
-            #     table[key] = [] #O nome do cabeçalho se torna uma chave de acesso para uma coluna
-
             total_lines = 0
-            print("abri o arquivo")
+            #Percorre linha a linha do arquivo 
             for line in f:
-                l = list(map(lambda col: col.strip('\\n"\\n'), line.split(',')))
-                for j, value in enumerate(l):
-                    if total_lines == 0:
-                        table[value] = []
-                    else:
-                        try:
-                            print(next(keys))
-                        except StopIteration as e:
-                            print(f"o valor da coluna {j} impediu com que a linha fosse impressa corretametne {value}")
-                            return 0
-                keys = iter(table.keys())
+
+                #TEMP
+                if total_lines == 10:
+                    break
+
+                treted_line = split_with_enclosure(line)
+
+                if total_lines == 0:
+                    table = {key: [] for key in treted_line}
+                else:
+                    for key, new_value in zip(table.keys(), treted_line):
+                        table[key].append(new_value)
+
                 total_lines+=1
                 
 
@@ -126,43 +122,65 @@ def print_matrix(m: list[list]):
             print(f'{cell.center(10, ' ')}', end=' ')
         print()
 
-def split_with_enclosure(line: str) -> list:
+def split_with_enclosure(line: str) -> list[str]:
+    r"""
+        Divide uma linha de um arquivo CSV (delimitado por vírgulas) utilizando a técnica de cerceamento de estado para identificar separadores que estão fora do cerceamento por aspas (enclosure).
+
+        Parameters
+        ----------
+
+        :param line: Representa uma linha de arquivo CSV 
+        :type line: str
+
+        Returns
+        -------
+
+        list[str]
+
+        Retorna uma lista de strings assim como split 
+
+        Notes
+        -----
+        Essa função pode ser utilizada em outro contextos assim como split, no entanto, é
+        imporatnte notar que ela é especialmente destinada para arquivos csv
     """
-        Divide uma linha de um arquivo de forma inteligênte, utilizando a técnica 
-        de cerceamento de estado para identificar se os separadores da divisão são parte de um
-        texto ou se são de fato separadores.
-    """
-    is_inside_quotes = False
     splited = []
+    is_inside_quotes = False
     word = ''
+    
+    for letter in line.replace('\n', ''):
 
-    for n, letter in enumerate(line):
-        if letter == '"': 
-            is_inside_quotes = not is_inside_quotes
-
-        # a partir daqui ele começará a inserir caso esteja dentro das aspas
-            
-        if letter == ',' and not is_inside_quotes:
-            splited.append(word)
-            word = ''
-        else:
-            word += letter
+        #1. se não estiver dentro de aspas: sabemos que toda vírgula pode ser inserida como texto -> word += letter,
+        #2. se estiver fora de aspas: a vírgula representa uma separação -> a palavra é incluída sem espaços e é limpa
+        #3. se for o último caracter: a última letra deve ser incluída e a palavra inserida
+        #4. dedução: todo caracter deve ser incluído, ao menos se ele não estiver dentro de aspas e for uma vírgula
+        #5. not is_inside_quotes and is_comma: é o caso em que a palavra deve ser dividida e incluída nas palavras separadas
         
+        is_comma = letter == ','
+        is_inside_quotes = not is_inside_quotes if letter == '"' else is_inside_quotes
+        is_separator_comma = not is_inside_quotes and is_comma
+
+        if is_separator_comma:
+            splited.append(word.strip().strip('"'))
+            word = ''
+            continue
+        word += letter
+    else:
+        #A conclusão para essa função é que é necessário incluir 
+        #a última palavra (a variável word) ao final da execução do for,
+        #repetindo a linha de inclusão da palavra
+        splited.append(word.strip())
     
     return splited
-
-
 
 if __name__ == "__main__":
     some_csv_file_path = match_files(DATABASE, 'regi')[0]
     print(type(some_csv_file_path))
 
 
-    #t = read_csv(some_csv_file_path)
-    #m = dict_table_to_matrix(t)
+    t = read_csv(some_csv_file_path)
+    m = dict_table_to_matrix(t)
+    
     #print(t)
-    #print_matrix(m)
-
-    a = ['"marlon", "indivíduo armado, até os dentes", "copo delito", 1, 1200']
-    print(split_with_enclosure(a[0]))
+    print_matrix(m)
 
