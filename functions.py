@@ -1,6 +1,11 @@
 from pathlib import Path
+from itertools import batched
+from typing import TypeAlias, Dict, List, Iterator, Any
 from asyncio import Task, run
 
+TableStructure: TypeAlias = Dict[str, List[str | None]]
+TableFragment: TypeAlias = List[List[str | None]]
+Vector: TypeAlias = List[Any]
 
 def root_dir(target: str) -> Path:
     r"""
@@ -74,53 +79,105 @@ def match_files(node: Path, file_name: str):
             
     return matched_files
 
-def read_csv(file_path: str):
+def read_csv(file_path: str, encoding: str) -> TableStructure:
+    r"""
+        Lê um arquivo completo linha a linha com a extenção csv e retorna um dicionário de listas,
+        permitindo o acesso à lista da coluna por meio da chave do cabeçalho do arquivo.
 
-    table: dict[list] = {}
+        Parameters
+        ----------
+
+        :param file_path: caminho absoluto para o arquivo .
+        :type file_path: str
+        :param encoding: a codificação do arquivo.
+        :type encoding: str
+
+        Raises
+        ------
+
+        :raise FileNotFoundError: Levanta um erro de arquivo não encontrado caso o caminho `file_path` resultar num arquivo não existente ou caso a extenção não seja equivalente ao arquivo que esta na pasta.
+
+        Returns
+        -------
+
+        :return: Retorna um dicionário de listas completo, permitindo a agregação dados de forma eficaz.
+
+        Limitations
+        -----
+
+        Pode não ser adqueda para obter arquivos muito extensos eficientemente
+    """
+
+    table: TableStructure = {}
     file = Path(file_path)
     #Verifica se o arquivo realmente existe para evitar erros durante
     #a execução caso o arquivo seja excluído, ou o caminho não exista mais
     if file.exists():
-        with open(file_path, 'r', encoding="latin-1") as f:
+        with open(file_path, 'r', encoding=encoding) as f:
             total_lines = 0
             #Percorre linha a linha do arquivo 
             for line in f:
 
-                #TEMP
-                if total_lines == 10:
+                if total_lines == 40:
                     break
 
                 treted_line = split_with_enclosure(line)
-
                 if total_lines == 0:
+                    #Aqui a compreensão de dicionários (dict comprehension) é fundamental para evitar 
+                    #a mesma referência de objeto, apontando todos para a mesma lista
+                    #Forma anterior: table = table.fromkeys(treted_line, [])
+                    #O problema consistia em que fromkeys atribuia a mesma lista para toda chave, obtendo um resultado de duplicidade entre as chaves
+                    #key: [] traz para cada chave do dicionário uma referência de lista distinta o que mantem a integridade do código
                     table = {key: [] for key in treted_line}
                 else:
-                    for key, new_value in zip(table.keys(), treted_line):
-                        table[key].append(new_value)
+                    keys = table.keys()
+                    #A função zip irá compilar chave e valor 
+                    for key, new_value in zip(keys, treted_line):
+                        clean_value = new_value.strip()
+                        if not clean_value:
+                            final_value = None
+                        else:
+                            final_value = clean_value
+                        table[key].append(final_value)
 
                 total_lines+=1
+    else:
+        raise FileNotFoundError(f'Não foi possível encontrar o arquivo {file.name}')
                 
 
     return table
 
-def dict_table_to_matrix(d: dict):
-    """header representa as chaves do dicionário em uma lista """
-    header = list(d.keys())
-    matrix = []
-    for j in range(len(list(d.values())[0])):
-        line = []
-        for i in range(len(header)):
-            line.append(d[header[i]][j])
-        matrix.append(line)
-    matrix.insert(0, header)
-    return matrix
+def generate_transposed(
+        table: TableStructure, 
+        batch_len: int = 10) -> Iterator[TableFragment]:
+    """
+        Comprime os valores da tabela em fragmentos menores de matriz e gera sobre eles linhas em lotes de dados.
 
-def print_matrix(m: list[list]):
-    for i in range(len(m)):
-        for j in range(len(m[i])):
-            cell = m[i][j]
-            print(f'{cell.center(10, ' ')}', end=' ')
-        print()
+        Parameters
+        ----------
+
+        :param table: Representa uma estrutura de dados baseada em colunas
+        :type table: TableStructure
+        :param batch_len: O tamanho máximo de cada lote
+        :type batch_len: int
+
+        Returns
+        -------
+
+        Retorna um `generator` dos fragmentos da tabela (`TableFragment`)
+    """
+    if not table:
+        return
+    
+    compressed_content = list(zip(*table.values()))
+    yield from batched(compressed_content, batch_len)
+   
+def display_fragment(tf: TableFragment):
+    for batch in tf:
+        for line in batch:
+            for column in line:
+                print(column, end=' ')
+            print()
 
 def split_with_enclosure(line: str) -> list[str]:
     r"""
@@ -156,7 +213,7 @@ def split_with_enclosure(line: str) -> list[str]:
         #4. dedução: todo caracter deve ser incluído, ao menos se ele não estiver dentro de aspas e for uma vírgula
         #5. not is_inside_quotes and is_comma: é o caso em que a palavra deve ser dividida e incluída nas palavras separadas
         
-        is_comma = letter == ','
+        is_comma = letter == ',' or letter == ';'
         is_inside_quotes = not is_inside_quotes if letter == '"' else is_inside_quotes
         is_separator_comma = not is_inside_quotes and is_comma
 
@@ -174,13 +231,13 @@ def split_with_enclosure(line: str) -> list[str]:
     return splited
 
 if __name__ == "__main__":
-    some_csv_file_path = match_files(DATABASE, 'regi')[0]
+    some_csv_file_path = match_files(DATABASE, 'porte')[0]
     print(type(some_csv_file_path))
 
-
-    t = read_csv(some_csv_file_path)
-    m = dict_table_to_matrix(t)
+    
+    t = read_csv(some_csv_file_path, 'latin-1')
+    m = generate_transposed(t)
     
     #print(t)
-    print_matrix(m)
+    display_fragment(m)
 
