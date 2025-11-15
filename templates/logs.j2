@@ -1,0 +1,17 @@
+{% extends "./base.j2" %}
+{% block title %} - {{title}}{% endblock %}
+{% block head %}
+    {{super()}}
+{% endblock head %}
+{% block content %}
+    <h1>{{title}}</h1>
+    {% if files %}
+        <ul>
+            {% for file in files %}
+            <li>{{file}}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Não há arquivos para disponibilizar</p>
+    {% endif %}
+{% endblock content %}

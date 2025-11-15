@@ -42,6 +42,7 @@ def root_dir(target: str) -> Path:
 
 rd = root_dir("search-system")
 DATABASE = rd / "database"
+
 def match_files(node: Path, file_name: str):
     r"""
         Busca por arquivos de forma recursiva na árvore de diretórios,
@@ -166,6 +167,7 @@ def generate_transposed(
 
         Retorna um `generator` dos fragmentos da tabela (`TableFragment`)
     """
+    #Verifica se a tabela está vazia
     if not table:
         return
     
@@ -179,7 +181,7 @@ def display_fragment(tf: TableFragment):
                 print(column, end=' ')
             print()
 
-def split_with_enclosure(line: str) -> list[str]:
+def split_with_enclosure(line: str, *separators: str) -> list[str]:
     r"""
         Divide uma linha de um arquivo CSV (delimitado por vírgulas) utilizando a técnica de cerceamento de estado para identificar separadores que estão fora do cerceamento por aspas (enclosure).
 
@@ -201,11 +203,14 @@ def split_with_enclosure(line: str) -> list[str]:
         Essa função pode ser utilizada em outro contextos assim como split, no entanto, é
         imporatnte notar que ela é especialmente destinada para arquivos csv
     """
+    if not separators:
+        separators = (',', ';')
+
     splited = []
     is_inside_quotes = False
     word = ''
     
-    for letter in line.replace('\n', ''):
+    for i, letter in enumerate(line.replace('\n', '')):
 
         #1. se não estiver dentro de aspas: sabemos que toda vírgula pode ser inserida como texto -> word += letter,
         #2. se estiver fora de aspas: a vírgula representa uma separação -> a palavra é incluída sem espaços e é limpa
@@ -213,8 +218,9 @@ def split_with_enclosure(line: str) -> list[str]:
         #4. dedução: todo caracter deve ser incluído, ao menos se ele não estiver dentro de aspas e for uma vírgula
         #5. not is_inside_quotes and is_comma: é o caso em que a palavra deve ser dividida e incluída nas palavras separadas
         
-        is_comma = letter == ',' or letter == ';'
+        is_comma = letter in separators
         is_inside_quotes = not is_inside_quotes if letter == '"' else is_inside_quotes
+        #não está dentro de aspas e não é uma vírgula
         is_separator_comma = not is_inside_quotes and is_comma
 
         if is_separator_comma:
@@ -226,7 +232,7 @@ def split_with_enclosure(line: str) -> list[str]:
         #A conclusão para essa função é que é necessário incluir 
         #a última palavra (a variável word) ao final da execução do for,
         #repetindo a linha de inclusão da palavra
-        splited.append(word.strip())
+        splited.append(word.strip().strip('"'))
     
     return splited
 
@@ -238,6 +244,7 @@ if __name__ == "__main__":
     t = read_csv(some_csv_file_path, 'latin-1')
     m = generate_transposed(t)
     
-    #print(t)
+    print(t)
     display_fragment(m)
+
 
