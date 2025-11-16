@@ -275,8 +275,3 @@ if __name__ == "__main__":
 
     # for element in zip(*d.values()):
     #     print(element)
-
-    a = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
-    lotes = batched(a, 2)
-    for lote in lotes:
-        print(lote)
