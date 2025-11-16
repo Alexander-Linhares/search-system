@@ -38,7 +38,40 @@ li {
     color: #9c9b9b;
 }
 
+li:last-child {
+    border-bottom: none;
+}
+
+
 li:hover {
     color: #c2c2c2;
     text-shadow: 0px 0px 1px #fff;
+}
+
+#view-directory {
+    width: 100%;
+    overflow-y: auto;
+}
+
+/* 1. Largura da Barra de Rolagem */
+::-webkit-scrollbar {
+    width: 8px; /* Largura para barras verticais */
+    height: 10px; /* Altura para barras horizontais */
+}
+
+/* 2. Fundo da Barra (Opcional) */
+::-webkit-scrollbar-track {
+    background: #1a1a1a; /* Cor de fundo clara */
+    border-radius: 10px;
+}
+
+/* 3. Polegar (A Alça Arrastável) */
+::-webkit-scrollbar-thumb {
+    background: #2c2c2c; /* Cor do polegar em estado normal */
+    border-radius: 10px;
+}
+
+/* 4. Estado Hover do Polegar */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Cor mais escura ao passar o mouse */
 }

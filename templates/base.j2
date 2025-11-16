@@ -1,26 +1,30 @@
+{% set parent_subpath = parent_subpath|default(None) %}
 <!DOCTYPE html>
 <html lang="pt-br">
+    <head>
+        {% block head %}
+        <meta charset="utf-8">
+        <title>Polícia Militar {% block title %}{% endblock %}</title>
 
-<head>
-    {% block head %}
-    <meta charset="utf-8">
-    <title>Polícia Militar {% block title %}{% endblock %}</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" 
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" 
+            integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" 
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/base.css')}}">
+        {% endblock %}
+    </head>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" 
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" 
-          integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" 
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="{{url_for('static', filename='css/base.css')}}">
-    {% endblock %}
-</head>
-
-<body>
-    <div id="content">
-        {% block content %}{% endblock %}
-    </div>
-</body>
-
+    <body>
+        <div id="content">
+            {% if parent_subpath %}
+                <a href="{{ url_for('index.index_endpoint', subpath=parent_subpath) }}">
+                    <i class="fa-solid fa-arrow-left"></i> Voltar
+                </a>
+            {% endif %}
+            {% block content %}{% endblock %}
+        </div>
+    </body>
 </html>

@@ -63,10 +63,6 @@ tbody td {
     text-overflow: ellipsis;
 }
 
-body {
-    background-color: #161616;
-}
-
 /* Menu de paginação */
 nav {
     margin: 0;
