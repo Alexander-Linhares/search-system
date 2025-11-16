@@ -3,87 +3,17 @@
 {% block head %}
     
     {{ super() }}
+    <link rel="stylesheet" href="{{url_for('static', filename='css/dashboard.css')}}"/>
     <style>
-        #content {
-            width: 80%;
-            padding: 0;
-            box-shadow: 2px 2px 5px #rgba(0, 0, 0, 0.25);
-            border: none;
-            padding: 0 1em;
-        }
-        #container {
-            width: 100%;
-            overflow-y: auto;
-            scrollbar-color: #000;
-        }
-        
-        table {
-            table-layout: fixed; 
-            width: 100%; 
-            border-collapse: collapse;
-        }
-        thead tr {
-            position: sticky;
-            top: 0;
-            background-color: rgb(27, 27, 27);
-            box-shadow: 5px 0 5px rgba(0,0,0,.25);
-        }
-        thead td {
-            text-align: center;
-            font-weight: bold;
-            color: rgb(136, 136, 136);
-            padding: 5px 0;
-            border-bottom: 1px solid #31457e;
-            overflow-x: hidden;
-        }
-        tbody td {
-            text-align: center;
-        }
-        tbody tr {
-            height: 4em;
-            transition: 0.1s background-color;
-        }
-        tbody tr:hover{
-            background-color: rgb(27, 27, 27);
-            cursor: pointer;
-        }
-        body {
-            background-color: #161616;
-        }
-        nav {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            display: flex;
-            justify-content: right;
-        }
-        nav ul {
-            display: flex;
-            flex-direction: row;
-            padding: 0;
-        }
-        nav li {
-            color: #707070;
-            border: none;
-            padding: 5px 10px;
-            background-color: #161616;
-            border-radius: 5px;
-            margin: 0 1px;
-            cursor: pointer;
-        }
-        nav li.active {
-            background-color: #31457e;
-            color: #f3f3f3;
-        }
-        h1 {
-            color: #31457e
+        .cell-overflowed {
+            background-color: rgb(255, 0, 0);
         }
     </style>
 {% endblock head %}
 {% block content %}
     <h1>Table Overview</h1>
     <div id="container">
-        <table>
+        <table class="table-overview">
             <thead>
                 <tr>
                     {%for column in header %}
@@ -95,7 +25,10 @@
                 {% for line in body %}
                     <tr>
                         {% for column in line %}
-                            <td>{{column}}</td>
+                            <td>
+                                {# o span isola a lógica de truncamento assim td cuida apenas e exibir o conteúdo, não limitando pseudo-elementos como bofore ou after #}
+                                <span class="cell-truncate">{{column}}</span>
+                            </td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
@@ -112,16 +45,34 @@
         </ul>
     </nav>
     <script>
-        const paginationNav = document.querySelector('#pagination')
-        const pagElements = paginationNav.querySelectorAll('li')
+        //Cria a lógica de paginação de forma visual
+        const paginationNav = document.querySelector('#pagination');
+        const pagElements = paginationNav.querySelectorAll('li');
         if (pagElements) {
             pagElements.forEach(el => {
+            //adiciona um evento de clique para cada elemento paginável
             el.addEventListener('click', (event) => {
-                    event.preventDefault()
-                    pagElements.forEach(el => el.classList.remove('active'))
-                    el.classList.add('active')
+                    event.preventDefault();
+                    //Limpa todas os outros elementos ativos
+                    pagElements.forEach(el => el.classList.remove('active'));
+                    //Adiciona a classe ativo para o elemento atual
+                    el.classList.add('active');
                 })
             })
+        }
+
+        //pegar a tabela de visualização
+        const tableOverview = document.querySelector('.table-overview');
+        if (tableOverview) {
+            tableOverview.querySelectorAll('tbody td').forEach(cell => {
+                const truncatedContent = cell.querySelector('.cell-truncate');
+                if (truncatedContent && truncatedContent.clientWidth < truncatedContent.scrollWidth) {
+                    const fulltext = truncatedContent.textContent.trim();
+                    cell.setAttribute('data-tooltip', fulltext);
+                    cell.classList.add('has-custom-tooltip');
+                    console.log(`célula que possui valor truncado: ${cell}`)
+                }
+            });
         }
         
     </script>

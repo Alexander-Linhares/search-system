@@ -1,14 +1,16 @@
 {% extends "./base.j2" %}
 {% block title %} - {{title}}{% endblock %}
+
 {% block head %}
     {{super()}}
 {% endblock head %}
+
 {% block content %}
     <h1>{{title}}</h1>
     {% if files %}
         <ul>
             {% for file in files %}
-            <li><a href="{{url_for(endpoint, subpath='dashboard/'+file.name)}}">{{file.name}}</a></li>
+                <li><a href="{{url_for(endpoint, subpath='dashboard/'+file.name)}}">{{file.name}}</a></li>
             {% endfor %}
         </ul>
     {% else %}
