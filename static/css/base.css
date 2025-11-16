@@ -53,6 +53,10 @@ li:hover {
     overflow-y: auto;
 }
 
+h1 {
+    color: #31457e;
+}
+
 /* 1. Largura da Barra de Rolagem */
 ::-webkit-scrollbar {
     width: 8px; /* Largura para barras verticais */

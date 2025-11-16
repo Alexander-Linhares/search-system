@@ -40,15 +40,16 @@ def index_endpoint(subpath):
             }
             #verifica se o caminho foi passado pela url e se ele tem algo
             if subpath:
+                #Transforma
                 parent_subpath = build_uri(DATABASE, subpath).relative_to(DATABASE).parent.as_posix()
             else:
                 parent_subpath = ''
 
             return render_template('index.j2', parent_subpath=parent_subpath, path_components=path_components, title=title)
         if uri.is_file():
-            #leva para dashboard
+            #Redireciona para a página de dashboard passando o arquivo e a página como parâmetros
+            #ex: <domain_name>/Dashboard?file=[nome do arquivo]&page=[número da página]
             initial_page = 1
-            #dashboard será a página de visualização das métricas e da table overview
             return redirect(
                 url_for('dashboard.dashboard_handler', 
                         file='Registros_2023.csv',
