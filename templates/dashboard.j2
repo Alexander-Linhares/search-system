@@ -1,0 +1,128 @@
+{% extends "./base.j2" %}
+{% block title %}Dashboard{% endblock title %}
+{% block head %}
+    
+    {{ super() }}
+    <style>
+        #content {
+            width: 80%;
+            padding: 0;
+            box-shadow: 2px 2px 5px #rgba(0, 0, 0, 0.25);
+            border: none;
+            padding: 0 1em;
+        }
+        #container {
+            width: 100%;
+            overflow-y: auto;
+            scrollbar-color: #000;
+        }
+        
+        table {
+            table-layout: fixed; 
+            width: 100%; 
+            border-collapse: collapse;
+        }
+        thead tr {
+            position: sticky;
+            top: 0;
+            background-color: rgb(27, 27, 27);
+            box-shadow: 5px 0 5px rgba(0,0,0,.25);
+        }
+        thead td {
+            text-align: center;
+            font-weight: bold;
+            color: rgb(136, 136, 136);
+            padding: 5px 0;
+            border-bottom: 1px solid #31457e;
+            overflow-x: hidden;
+        }
+        tbody td {
+            text-align: center;
+        }
+        tbody tr {
+            height: 4em;
+            transition: 0.1s background-color;
+        }
+        tbody tr:hover{
+            background-color: rgb(27, 27, 27);
+            cursor: pointer;
+        }
+        body {
+            background-color: #161616;
+        }
+        nav {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            display: flex;
+            justify-content: right;
+        }
+        nav ul {
+            display: flex;
+            flex-direction: row;
+            padding: 0;
+        }
+        nav li {
+            color: #707070;
+            border: none;
+            padding: 5px 10px;
+            background-color: #161616;
+            border-radius: 5px;
+            margin: 0 1px;
+            cursor: pointer;
+        }
+        nav li.active {
+            background-color: #31457e;
+            color: #f3f3f3;
+        }
+        h1 {
+            color: #31457e
+        }
+    </style>
+{% endblock head %}
+{% block content %}
+    <h1>Table Overview</h1>
+    <div id="container">
+        <table>
+            <thead>
+                <tr>
+                    {%for column in header %}
+                        <td>{{column}}</td>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for line in body %}
+                    <tr>
+                        {% for column in line %}
+                            <td>{{column}}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <nav id='pagination'>
+        <ul>
+            <li class="active">1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+        </ul>
+    </nav>
+    <script>
+        const paginationNav = document.querySelector('#pagination')
+        const pagElements = paginationNav.querySelectorAll('li')
+        if (pagElements) {
+            pagElements.forEach(el => {
+            el.addEventListener('click', (event) => {
+                    event.preventDefault()
+                    pagElements.forEach(el => el.classList.remove('active'))
+                    el.classList.add('active')
+                })
+            })
+        }
+        
+    </script>
+{% endblock content %}  

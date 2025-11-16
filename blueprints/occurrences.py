@@ -1,19 +1,19 @@
 from flask import Blueprint, render_template
 
-requirements_bp = Blueprint('requirements', __name__, url_prefix='/Requirements')
+occurrences_bp = Blueprint('occurrences', __name__, url_prefix='/Occurrences')
 
-@requirements_bp.route('/', defaults={'subpath': ''})
-@requirements_bp.route('/<path:subpath>')
-def logs_handler(subpath):
+@occurrences_bp.route('/', defaults={'subpath': ''})
+@occurrences_bp.route('/<path:subpath>')
+def occurrences_handler(subpath):
     """
         Função que lida com todas as requisições que chegam em /Logs/
         e subpastas, como /Logs/teste/ ou /Logs/teste/subpasta
     """
 
     if not subpath:
-        print(f'você está na rota Requirements: {requirements_bp.name}')
+        print(f'você está na rota Occurrences: {occurrences_bp.name}')
         #Temporário
-        title = "Requirements"
+        title = "Occurrences"
         files = ["Arquivo um", "Arquivo dois", "Arquivo 3"]
 
         #rederiza o html 

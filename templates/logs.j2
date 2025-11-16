@@ -8,7 +8,7 @@
     {% if files %}
         <ul>
             {% for file in files %}
-            <li>{{file}}</li>
+            <li><a href="{{url_for(endpoint, subpath='dashboard/'+file.name)}}">{{file.name}}</a></li>
             {% endfor %}
         </ul>
     {% else %}

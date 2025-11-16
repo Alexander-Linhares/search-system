@@ -76,7 +76,7 @@ def match_files(node: Path, file_name: str):
             matched_files.extend(sub_matches)
         elif element.is_file():
             if file_name.lower() in element.name.lower():
-                matched_files.append(element.absolute())
+                matched_files.append(element)
             
     return matched_files
 
@@ -118,10 +118,12 @@ def read_csv(file_path: str, encoding: str) -> TableStructure:
             total_lines = 0
             #Percorre linha a linha do arquivo 
             for line in f:
-
+                
+                #Temporário
                 if total_lines == 40:
                     break
-
+                #'"ANO_EMISSAO", "MES_MISSAO", "UF", "MUNICÍPIO",'
+                #resumidamente oq slipt_with_enclosure faz: ['ANO_EMISSAO', 'MES_MISSAO', 'UF', 'MUNICÍPIO', '']
                 treted_line = split_with_enclosure(line)
                 if total_lines == 0:
                     #Aqui a compreensão de dicionários (dict comprehension) é fundamental para evitar 
@@ -133,6 +135,9 @@ def read_csv(file_path: str, encoding: str) -> TableStructure:
                 else:
                     keys = table.keys()
                     #A função zip irá compilar chave e valor 
+                    #A = [a, b, c, d, f]
+                    #B =[banan, maça, pera, figo, melancia]
+                    #C =((a, banana, ...), (b, maça), (c, pera), (d, figo), (f, melancia))
                     for key, new_value in zip(keys, treted_line):
                         clean_value = new_value.strip()
                         if not clean_value:
@@ -168,12 +173,24 @@ def generate_transposed(
         Retorna um `generator` dos fragmentos da tabela (`TableFragment`)
     """
     #Verifica se a tabela está vazia
+
+    """
+    ANO_EMISSÃO: [1999, 1923, 1823]
+
+    """
+
     if not table:
         return
-    
+    #SPREAD
+    #zip(table.values()) -> zip(
+    # [ <- lista
+    #   [...], [...], ...
+    #]) -> zip(listazona)
+    #zip(*table.values()) -> zip(lista1, lista2, lista3, lista4)
+    #[[lista1[0], lista2[0], lista3[0], lista4[0]]]
     compressed_content = list(zip(*table.values()))
     yield from batched(compressed_content, batch_len)
-   
+
 def display_fragment(tf: TableFragment):
     for batch in tf:
         for line in batch:
@@ -237,14 +254,29 @@ def split_with_enclosure(line: str, *separators: str) -> list[str]:
     return splited
 
 if __name__ == "__main__":
-    some_csv_file_path = match_files(DATABASE, 'porte')[0]
-    print(type(some_csv_file_path))
+    # some_csv_file_path = match_files(DATABASE, 'porte')[0]
+    # print(type(some_csv_file_path))
 
     
-    t = read_csv(some_csv_file_path, 'latin-1')
-    m = generate_transposed(t)
-    
-    print(t)
-    display_fragment(m)
+    # t = read_csv(some_csv_file_path, 'latin-1')
+    # m = generate_transposed(t)
+    # print(t['MUNICIPIO'].count('ARAPIRACA'))
 
 
+    def foo(*args): #args
+        for arg in args:
+            print(arg)
+
+    foo(*['a', 'b', 'c']) # -> foo('a', 'b', 'c')
+
+    # d = {'a': ['abacaxi', 'abajur'], 'b': ['banana', 'boia'], 'c': ['caju', 'chinelo']}
+    # #d.values() # -> [[], [], []]
+    # print(d['a'])
+
+    # for element in zip(*d.values()):
+    #     print(element)
+
+    a = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+    lotes = batched(a, 2)
+    for lote in lotes:
+        print(lote)
