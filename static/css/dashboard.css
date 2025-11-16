@@ -1,0 +1,130 @@
+#content {
+    width: 80%;
+    padding: 0;
+    box-shadow: 10px 5px 5px rgba(0,0,0,0.03);
+    border: none;
+    padding: 0 1em;
+}
+#container {
+    width: 100%;
+    overflow-y: auto;
+    scrollbar-color: #000;
+}
+
+/* Table overview */
+table {
+    table-layout: fixed; 
+    width: 100%; 
+    border-collapse: collapse;
+}
+
+/* linha do cabeçalho */
+thead tr {
+    position: sticky;
+    z-index: 100;
+    top: 0;
+    background-color: rgb(27, 27, 27);
+    box-shadow: 5px 0 5px #31457e;
+    border-bottom: 1px solid #31457e;
+}
+
+/* célula do cabeçalho */
+thead td {
+    text-align: center;
+    font-weight: bold;
+    color: rgb(136, 136, 136);
+    padding: 5px 0;
+    overflow-x: hidden;
+}
+
+
+/* corpo databela */
+tbody tr {
+    height: 4em;
+    transition: 0.1s background-color;
+}
+
+tbody tr:hover{
+    background-color: rgb(27, 27, 27);
+    cursor: pointer;
+}
+
+tbody td {
+    text-align: center;
+}
+
+.cell-truncate {
+    display: block; 
+    width: 100%;
+    
+    /* Regras ESSENCIAIS para o truncamento */
+    overflow: hidden; 
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+body {
+    background-color: #161616;
+}
+
+/* Menu de paginação */
+nav {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    justify-content: right;
+}
+nav ul {
+    display: flex;
+    flex-direction: row;
+    padding: 0;
+}
+nav li {
+    color: #707070;
+    border: none;
+    padding: 5px 10px;
+    background-color: #161616;
+    border-radius: 5px;
+    margin: 0 1px;
+    cursor: pointer;
+}
+nav li.active {
+    background-color: #31457e;
+    color: #f3f3f3;
+}
+
+
+h1 {
+    color: #31457e
+}
+
+/* para a definção de tooltip */
+
+.has-custom-tooltip {
+    position: relative;
+    cursor: help;
+}
+
+.has-custom-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 0; /* Centraliza horizontalmente */
+    /* bottom: 50%; Acima da célula */
+    top: 75%;
+    text-align: left;
+    padding: 2px 10px;
+    background-color: #181818; /* Cor do seu tema */
+    border: 1px solid #272727;
+    color: rgb(85, 85, 85);
+    white-space: normal; /* Permite que o texto quebre linhas dentro do popup */
+    min-width: 200px;
+    z-index: 2; /* Garante que fique acima de outros elementos */
+    opacity: 0;       /* Esconde por padrão */
+    visibility: hidden; /* Esconde completamente */
+}
+
+.has-custom-tooltip:hover::after {
+    opacity: 1;
+    visibility: visible;
+}

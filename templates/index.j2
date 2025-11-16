@@ -5,10 +5,17 @@
 {% endblock head %}
 {% block content %}
     <h1>Escolha uma pasta</h1>
-    {% if base_endpoints %}
+    {% if path_components %}
         <ul>
-            {% for name, endpoint in base_endpoints.items() %}
-                <li><a href="{{ url_for(endpoint) }} ">{{name}}</a></li>
+            {% for component in path_components.values() %}
+                <li>
+                {% if component.type == 'directory' %}
+                    <i class="fa-solid fa-folder"></i>
+                {% else %}
+                    <i class="fa-solid fa-file"></i>
+                {%endif%}
+                <a href="{{url_for('index.index_endpoint', subpath=component.uri)}}" title="{{component.uri}}">{{component.name}}</a> 
+                </li>
             {% endfor %}
         </ul>
     {% else %}
