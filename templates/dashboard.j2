@@ -17,13 +17,15 @@
                 </tr>
             </thead>
             <tbody>
-                {% for line in body %}
+
+                <p>Conteúdo da tabela vem aqui</p>
+                {# {% for line in body %}
                     <tr>
                         {% for column in line %}
                             <td>{{column}}</td>
                         {% endfor %}
                     </tr>
-                {% endfor %}
+                {% endfor %} #}
             </tbody>
         </table>
     </div>
@@ -34,9 +36,21 @@
             <li>3</li>
             <li>4</li>
             <li>5</li>
-        </ul>
+        </ul> 
     </nav>
-    <script>
+    <script type="text/javascript">
+        // Esse script conecta o front-end com a rota de api/dataset_rows?file=<arquivo>&page=<number>
+
+        //pega as informações passadas por 
+        const filePath = '{{ file }}';
+        const pageNumber = '{{ page }}';
+
+        console.log(filePath);
+        console.log(pageNumber);
+
+    </script>
+    <script type="text/javascript">
+        // Esse script aqui cuidará da renderização dinâmica do contador de páginas
         const paginationNav = document.querySelector('#pagination')
         const pagElements = paginationNav.querySelectorAll('li')
         if (pagElements) {

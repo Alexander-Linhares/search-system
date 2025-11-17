@@ -9,5 +9,4 @@ def dashboard_handler():
     initial_page = request.args.get('page', 1, int)
     file = request.args.get('file', None)
 
-    return f'<p>os parâmetros passados foram: {initial_page} e {file}</p>'
-    #return render_template('dashboard.j2')
+    return render_template('dashboard.j2', file=file, page=initial_page)

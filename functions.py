@@ -253,6 +253,9 @@ def split_with_enclosure(line: str, *separators: str) -> list[str]:
     
     return splited
 
+def get_relative_path(base_path: Path, subpath: Path):
+    pass
+
 if __name__ == "__main__":
     # some_csv_file_path = match_files(DATABASE, 'porte')[0]
     # print(type(some_csv_file_path))
