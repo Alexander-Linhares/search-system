@@ -2,11 +2,13 @@ import os
 
 from flask import Flask, render_template, url_for
 from jinja2 import TemplateNotFound
-from routes import ROUTES
+from app.routes import ROUTES
 
 def create_app():
     print("Criando instância do aplicativo flask")
     app = Flask(__name__)
+
+    app.config.from_pyfile('./config.py')
 
     for route in ROUTES:
         print(f"registrando a rota {route.name}")
@@ -14,6 +16,4 @@ def create_app():
     
     return app
 
-if __name__ == "__main__":
-    app = create_app()
-    app.run(debug=True)
+app = create_app()

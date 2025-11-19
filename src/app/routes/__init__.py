@@ -1,11 +1,11 @@
 from .index import index_bp
 from .dashboard import dashboard_bp
-import routes.api 
+from .api import API_ROUTES
 
 ROUTES = [
     index_bp,
     dashboard_bp,
-    *routes.api.API_ROUTES
+    *API_ROUTES
 ]
 
 __all__ = [

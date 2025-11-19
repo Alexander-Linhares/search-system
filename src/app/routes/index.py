@@ -1,10 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, request
-from functions import match_files, DATABASE, generate_transposed, read_csv
+from flask import Blueprint, render_template, redirect, url_for, request, current_app
+from app.functions import match_files, generate_transposed, read_csv, root_dir
 from pathlib import Path
-from functions import root_dir
-
-PROJECT_ROOT = root_dir("search-system")
-DATABASE = PROJECT_ROOT / 'database'
 
 index_bp = Blueprint('index', __name__, url_prefix='/Source')
 
@@ -14,14 +10,15 @@ def build_uri(root: Path, subpath:str) -> Path:
         print("Essa uri é válida")
         return new_uri
     else:
-        raise FileNotFoundError('Path não encontrado')
+        print('nada encontrado')
+        print(new_uri)
 
 
 @index_bp.route('/', defaults={'subpath': ''})
 @index_bp.route('/<path:subpath>')
 def index_endpoint(subpath):
 
-    
+    DATABASE = current_app.config.get('DATABASE', None, )
 
     uri: Path = build_uri(DATABASE, subpath)
     #verifica se a uri realmente existe, build_uri retorna none caso não consiga montar a uri 
@@ -52,7 +49,7 @@ def index_endpoint(subpath):
             initial_page = 1
             return redirect(
                 url_for('dashboard.dashboard_handler', 
-                        file='Registros_2023.csv',
+                        file=uri.name,
                         page=initial_page))
 
     return '<p>Não foi possível encontrar o caminho especificado</p>'
